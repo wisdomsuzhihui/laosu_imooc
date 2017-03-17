@@ -1,7 +1,7 @@
 {
   "name": "laosu",
   "version": "1.0.0",
-  "description": "",
+  "description": "laosu app web",
   "main": "app.js",
   "dependencies": {
     "express": "^3.4.8",
