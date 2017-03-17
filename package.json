@@ -1,0 +1,26 @@
+{
+  "name": "laosu",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.15.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wisdomsuzhihui/laosu.git"
+  },
+  "keywords": [
+    "laosu"
+  ],
+  "author": "laosu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wisdomsuzhihui/laosu/issues"
+  },
+  "homepage": "https://github.com/wisdomsuzhihui/laosu#readme"
+}
