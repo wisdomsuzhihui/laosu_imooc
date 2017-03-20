@@ -2,6 +2,8 @@
  * 模式 Schema
  */
 var mongoose = require('mongoose')
+var bcrypt = require('bcrypt-nodejs')
+var SALT_WORK_FACTOR = 10 // 加盐强度
 
 var UserSchema = new mongoose.Schema({
   name: {
@@ -22,12 +24,23 @@ var UserSchema = new mongoose.Schema({
 })
 // 方法
 UserSchema.pre('save', function (next) {
+  var user = this
+
   if (this.isNew) {
     this.meta.createAt = this.meta.updataAt = Date.now()
   } else {
     this.meta.updataAt = Date.now()
   }
-  next()
+
+  bcrypt.genSalt(SALT_WORK_FACTOR, function(err,salt){
+    if(err) return next(err)
+
+    bcrypt.hash(user.password,salt, function(err, hash){
+      if(err) return next(err)
+      user.pasword = hash
+      next() 
+    })
+  })
 })
 
 UserSchema.statics = {
