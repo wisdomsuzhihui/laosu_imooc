@@ -32,16 +32,26 @@ UserSchema.pre('save', function (next) {
     this.meta.updataAt = Date.now()
   }
 
-  bcrypt.genSalt(SALT_WORK_FACTOR, function(err,salt){
-    if(err) return next(err)
-
-    bcrypt.hash(user.password,salt, function(err, hash){
-      if(err) return next(err)
-      user.pasword = hash
-      next() 
+  bcrypt.genSalt(SALT_WORK_FACTOR, function (err, salt) {
+    if (err) return next(err)
+    bcrypt.hash(user.password, salt, null, function (err, hash) {
+      if (err) return next(err)
+      user.password = hash
+      next()
     })
   })
 })
+
+// 实例方法对象
+UserSchema.methods = {
+  comparePassword: function (_password, cb) {
+    bcrypt.compare(_password, this.password, function (err, isMatch) {
+      if (err) return cb(err)
+
+      cb(null, isMatch)
+    })
+  }
+}
 
 UserSchema.statics = {
   // 取出所有数据

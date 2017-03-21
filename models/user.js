@@ -1,5 +1,5 @@
-function userModel(sequelize, DataTypes) {
-  var User = sequelize.define('User', {
-    user_name
-  })
-}
+var mongoose = require('mongoose')
+var UserSchema = require('../schemas/user')
+var User = mongoose.model('User', UserSchema)
+
+module.exports = User;

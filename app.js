@@ -7,6 +7,7 @@ var _ = require('underscore') // 新字段替换老字段
 var Sequelize = require('sequelize');
 
 var Movie = require('./models/movie')
+var User = require('./models/user')
 var port = process.env.PORT || 3000
 var app = express()
 // var db = require('./db1');
@@ -24,10 +25,10 @@ var sequelize = new Sequelize('ItcastSIM', 'sa', '123456', {
   }
 })
 
-var User = sequelize.define('user', {
-  username: Sequelize.STRING,
-  birthday: Sequelize.DATE
-});
+// var User = sequelize.define('user', {
+//   username: Sequelize.STRING,
+//   birthday: Sequelize.DATE
+// });
 // 同步创建数据
 // sequelize.sync().then(function () {
 //   return User.create({
@@ -103,6 +104,89 @@ app.get('/', function (req, res) {
 
 })
 
+// signup
+app.post('/user/signup', function (req, res) {
+  var _user = req.body.user
+  // console.log(_user)
+  /**
+   * 1. req.body.user
+   * 2. req.param('user') // 都可以使用
+   * eg: url='/user/signup/:userid'
+   * var _userid = req.params.userid
+   * eg: url='/user/signup/1111?userid=1112
+   * var _userid = req.query.userid
+   * eg: ajax 提交
+   * var _userid = req.body.userid
+   */
+
+
+  User.find({
+    name: _user.name
+  }, function (err, user) {
+    if (err) {
+      console.log(err)
+    }
+
+    if (user.length) {
+      return res.redirect('/')
+    } else {
+      var user = new User(_user);
+      user.save(function (err, user) {
+        if (err) {
+          console.log(err)
+        }
+        // console.log(user)
+        res.redirect('/admin/userlist')
+      })
+    }
+
+  })
+})
+
+// signin
+app.post('/user/signin', function (req, res) {
+  var _user = req.body.user
+  var name = _user.name
+  var password = _user.password
+
+  User.findOne({
+    name: name
+  }, function (err, user) {
+    if (err) {
+      console.log(err)
+    }
+    if (!user) {
+      return res.redirect('/')
+    }
+    // 实例方法
+    user.comparePassword(password, function (err, isMatch) {
+      if (err) {
+        console.log(err);
+      }
+      if (isMatch) {
+        console.log('Password is matched!')
+        return res.redirect('/');
+      } else {
+        console.log('Password is not matched')
+      }
+    })
+
+  })
+})
+
+// userlist page
+app.get('/admin/userlist', function (req, res) {
+  User.fetch(function (err, users) {
+    if (err) {
+      console.log(err)
+    }
+    res.render('userlist', {
+      title: '用户列表',
+      users: users
+    })
+  })
+})
+
 // detail page
 app.get('/movie/:id', function (req, res) {
   var id = req.params.id
@@ -148,7 +232,6 @@ app.post('/admin/movie/new', function (req, res) {
   var id = req.body.movie._id
   var movieObj = req.body.movie
   var _movie
-
   // 数据库已这条记录
   if (id !== 'undefined') {
     Movie.findById(id, function (err, movie) {
@@ -184,7 +267,6 @@ app.post('/admin/movie/new', function (req, res) {
   }
 })
 
-
 // list page
 app.get('/admin/list', function (req, res) {
   Movie.fetch(function (err, movies) {
@@ -202,7 +284,6 @@ app.get('/admin/list', function (req, res) {
 // list delete movie
 app.delete('/admin/list', function (req, res) {
   var id = req.query.id
-
   if (id) {
     Movie.remove({
       _id: id
