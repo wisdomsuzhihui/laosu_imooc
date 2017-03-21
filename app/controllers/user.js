@@ -76,7 +76,7 @@
         if (isMatch) {
           // console.log('Password is matched!')
           req.session.user = user; // 保存登录状态
-
+          console.log(req.session.user)
           return res.redirect('/');
         } else {
           return res.redirect('/signin')

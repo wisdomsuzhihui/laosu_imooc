@@ -3,7 +3,7 @@ var Comment = require('../models/comment')
 
 // admin post movie
 exports.save = function (req, res) {
-  var _comment = req.body.user
+  var _comment = req.body.comment
   var movieId = _comment.movie
   var comment = new Comment(_comment)
 
