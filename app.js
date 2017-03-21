@@ -2,6 +2,7 @@ var express = require('express')
 var path = require('path')
 var sql = require('mssql')
 var mongoose = require('mongoose')
+var mongoStore = require('connect-mongo')(express)
 var _ = require('underscore') // 新字段替换老字段
 // http://docs.sequelizejs.com/en/v3/
 var Sequelize = require('sequelize');
@@ -10,9 +11,9 @@ var Movie = require('./models/movie')
 var User = require('./models/user')
 var port = process.env.PORT || 3000
 var app = express()
+var dbUrl = 'mongodb://localhost/imooc'
 // var db = require('./db1');
-
-mongoose.connect('mongodb://localhost/imooc')
+mongoose.connect(dbUrl)
 
 var sequelize = new Sequelize('ItcastSIM', 'sa', '123456', {
   host: '127.0.0.1',
@@ -47,6 +48,14 @@ var sequelize = new Sequelize('ItcastSIM', 'sa', '123456', {
 app.set('views', './views/pages')
 app.set('view engine', 'jade')
 app.use(express.bodyParser())
+app.use(express.cookieParser())
+app.use(express.session({
+  secret: 'laosu',
+  store: new mongoStore({
+    url: dbUrl,
+    collection: 'sessions'
+  })
+}))
 app.use(express.static(path.join(__dirname, 'public')))
 app.locals.moment = require('moment')
 app.listen(port)
@@ -69,14 +78,18 @@ var config = {
 // index page
 app.get('/', function (req, res) {
   // sql.connect('select * from UserInfo', function () {
-
   // })
   sql.connect(config).then(function () {
     new sql.Request()
       // .input('input_parameter', sql.Int, 1002)
       .query('select * from Classes').then(function (recordset) {
         // console.dir(recordset)
-
+        console.log('user in session:')
+        console.log(req.session.user)
+        var _user = req.session.user
+        if (_user) {
+          app.locals.user = _user
+        }
         Movie.fetch(function (err, movies) {
           if (err) {
             console.log(err)
@@ -164,7 +177,9 @@ app.post('/user/signin', function (req, res) {
         console.log(err);
       }
       if (isMatch) {
-        console.log('Password is matched!')
+        // console.log('Password is matched!')
+        req.session.user = user; // 保存登录状态
+
         return res.redirect('/');
       } else {
         console.log('Password is not matched')
@@ -172,6 +187,13 @@ app.post('/user/signin', function (req, res) {
     })
 
   })
+})
+
+// logout
+app.get('/logout', function (req, res) {
+  delete req.session.user
+  delete app.locals.user
+  res.redirect('/')
 })
 
 // userlist page
