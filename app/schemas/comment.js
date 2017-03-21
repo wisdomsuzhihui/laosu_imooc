@@ -6,7 +6,7 @@ var Schema = mongoose.Schema
 var ObjectId = Schema.Types.ObjectId
 
 var CommentSchema = new Schema({
-  movies: {
+  movie: {
     type: ObjectId,
     ref: 'Movie'
   },

@@ -44,7 +44,6 @@ var sequelize = new Sequelize('ItcastSIM', 'sa', '123456', {
 
 
 
-
 app.set('views', './app/views/pages')
 app.set('view engine', 'jade')
 app.use(express.bodyParser())
