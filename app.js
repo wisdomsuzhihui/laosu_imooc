@@ -7,8 +7,8 @@ var _ = require('underscore') // 新字段替换老字段
 // http://docs.sequelizejs.com/en/v3/
 var Sequelize = require('sequelize');
 
-var Movie = require('./models/movie')
-var User = require('./models/user')
+var Movie = require('./app/models/movie')
+var User = require('./app/models/user')
 var port = process.env.PORT || 3000
 var app = express()
 var dbUrl = 'mongodb://localhost/imooc'
@@ -45,7 +45,7 @@ var sequelize = new Sequelize('ItcastSIM', 'sa', '123456', {
 
 
 
-app.set('views', './views/pages')
+app.set('views', './app/views/pages')
 app.set('view engine', 'jade')
 app.use(express.bodyParser())
 app.use(express.cookieParser())
@@ -56,6 +56,7 @@ app.use(express.session({
     collection: 'sessions'
   })
 }))
+
 // development: 开发环境
 if ('development' === app.set('env')) {
   app.set('showStackError', true)
