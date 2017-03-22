@@ -6,6 +6,10 @@ block content
             form.form-horizontal(method="post", action="/admin/movie")
                 input(name="movie[_id]",type="hidden",value="#{movie._id}")
                 .form-group
+                    label.col-sm-2.control-label(for="inputCatetory") 电影分类
+                    .col-sm-10
+                        input#inputCatetory.form-control(name="movie[catetory]",type="text",value="#{movie.catetory}")
+                .form-group
                     label.col-sm-2.control-label(for="inputTitle") 电影名字
                     .col-sm-10
                         input#inputTitle.form-control(name="movie[title]",type="text",value="#{movie.title}")
