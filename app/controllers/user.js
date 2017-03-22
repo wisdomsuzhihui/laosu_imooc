@@ -30,14 +30,14 @@
      */
 
 
-    User.find({
+    User.findOne({
       name: _user.name
     }, function (err, user) {
       if (err) {
         console.log(err)
       }
 
-      if (user.length) {
+      if (user) {
         return res.redirect('/signin')
       } else {
         var user = new User(_user);
