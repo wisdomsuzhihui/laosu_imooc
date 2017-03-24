@@ -5,7 +5,7 @@ var mongoose = require('mongoose')
 var Schema = mongoose.Schema
 var ObjectId = Schema.Types.ObjectId
 
-var CatetorySchema = new Schema({
+var CategorySchema = new Schema({
   name: String,
   movies: [{
     type: ObjectId,
@@ -23,7 +23,7 @@ var CatetorySchema = new Schema({
   }
 })
 // 方法
-CatetorySchema.pre('save', function (next) {
+CategorySchema.pre('save', function (next) {
   if (this.isNew) {
     this.meta.createAt = this.meta.updataAt = Date.now()
   } else {
@@ -32,7 +32,7 @@ CatetorySchema.pre('save', function (next) {
   next()
 })
 
-CatetorySchema.statics = {
+CategorySchema.statics = {
   // 取出所有数据
   fetch: function (cb) {
     return this
@@ -49,4 +49,4 @@ CatetorySchema.statics = {
   }
 }
 
-module.exports = CatetorySchema
+module.exports = CategorySchema

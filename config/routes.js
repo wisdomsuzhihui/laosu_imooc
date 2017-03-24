@@ -3,6 +3,7 @@ var Index = require('../app/controllers/index')
 var User = require('../app/controllers/user')
 var Movie = require('../app/controllers/movie')
 var Comment = require('../app/controllers/comment')
+var Category = require('../app/controllers/category')
 /*
   var sql = require('mssql')
   var config = {
@@ -47,4 +48,11 @@ module.exports = function (app) {
 
   //Comment
   app.post('/user/comment', User.signinRequired, Comment.save)
+
+  //category
+  app.get('/admin/category/new', User.signinRequired, User.adminRequired, Category.new)
+  app.post('/admin/category', User.signinRequired, User.adminRequired, Category.save)
+  app.get('/admin/categorylist', User.signinRequired, User.adminRequired, Category.list)
+
+
 }

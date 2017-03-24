@@ -1,5 +1,5 @@
 var Movie = require('../models/movie')
-var Catetory = require('../models/catetory')
+var Category = require('../models/category')
 /**
  * 控制器
  */
@@ -47,7 +47,7 @@ exports.index = function (req, res) {
   console.log('user in session:')
   console.log(req.session.user)
 
-  Catetory
+  Category
     .find({})
     .populate({
       path: 'movies',
@@ -55,7 +55,7 @@ exports.index = function (req, res) {
         limit: 5
       }
     })
-    .exec(function (err, catetories) {
+    .exec(function (err, categories) {
       // body
       if (err) {
         console.log(err)
@@ -63,7 +63,7 @@ exports.index = function (req, res) {
 
       res.render('index', {
         title: '老苏 首页',
-        catetories: catetories
+        categories: categories
       })
     })
 }

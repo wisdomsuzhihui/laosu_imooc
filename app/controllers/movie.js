@@ -1,5 +1,6 @@
 var Movie = require('../models/movie')
 var Comment = require('../models/comment')
+var Category = require('../models/category')
 var _ = require('underscore') // 新字段替换老字段
 
 
@@ -38,18 +39,12 @@ exports.detail = function (req, res) {
 }
 // admin page
 exports.new = function (req, res) {
-  res.render('admin', {
-    title: '老苏 后台录入页',
-    movie: {
-      title: '',
-      doctor: '',
-      country: '',
-      year: '',
-      poster: '',
-      flash: '',
-      summary: '',
-      language: '',
-    }
+  Category.find({}, function (err, categories) {
+    res.render('admin', {
+      title: '老苏 后台录入页',
+      categories: categories,
+      movie: {}
+    })
   })
 }
 
@@ -59,9 +54,12 @@ exports.update = function (req, res) {
   var id = req.params.id
   if (id) {
     Movie.findById(id, function (err, movie) {
-      res.render('admin', {
-        title: 'imooc 后台录入页',
-        movie: movie
+      Category.find({}, function (err, categories) {
+        res.render('admin', {
+          title: 'imooc 后台录入页',
+          movie: movie,
+          categories: categories
+        })
       })
     })
   }
@@ -73,7 +71,7 @@ exports.save = function (req, res) {
   var movieObj = req.body.movie
   var _movie
   // 数据库已这条记录
-  if (id !== 'undefined') {
+  if (id) {
     Movie.findById(id, function (err, movie) {
       if (err) {
         console.log(err)
@@ -87,22 +85,34 @@ exports.save = function (req, res) {
       })
     })
   } else {
-    _movie = new Movie({
-      doctor: movieObj.doctor,
-      title: movieObj.title,
-      country: movieObj.country,
-      language: movieObj.language,
-      year: movieObj.year,
-      poster: movieObj.poster,
-      summary: movieObj.summary,
-      flash: movieObj.flash
-    })
-
+    /* // 一期代码
+      _movie = new Movie({
+        doctor: movieObj.doctor,
+        title: movieObj.title,
+        country: movieObj.country,
+        language: movieObj.language,
+        year: movieObj.year,
+        poster: movieObj.poster,
+        summary: movieObj.summary,
+        flash: movieObj.flash
+      })
+    */
+    _movie = new Movie(movieObj)
+    // 选择的电影分类 id
+    var categoryId = _movie.category
     _movie.save(function (err, movie) {
       if (err) {
         console.log(err)
       }
-      res.redirect('/movie/' + movie._id);
+      // 根据分类id存入当前输入的电影ID
+      Category.findById(categoryId, function (err, category) {
+        category.movies.push(movie._id)
+
+        category.save(function (err, category) {
+          res.redirect('/movie/' + movie._id);
+
+        })
+      })
     })
   }
 }
