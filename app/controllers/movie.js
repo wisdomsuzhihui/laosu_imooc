@@ -72,6 +72,7 @@ exports.save = function (req, res) {
   var _movie
   // 数据库已这条记录
   if (id) {
+    console.log('数据库已有这条记录 ==================')
     Movie.findById(id, function (err, movie) {
       if (err) {
         console.log(err)
@@ -85,6 +86,7 @@ exports.save = function (req, res) {
       })
     })
   } else {
+    console.log('数据库已这条记录 ==================')
     /* // 一期代码
       _movie = new Movie({
         doctor: movieObj.doctor,
@@ -99,20 +101,39 @@ exports.save = function (req, res) {
     */
     _movie = new Movie(movieObj)
     // 选择的电影分类 id
-    var categoryId = _movie.category
+    var categoryId = movieObj.category,
+      categoryName = movieObj.categoryName
     _movie.save(function (err, movie) {
       if (err) {
         console.log(err)
       }
-      // 根据分类id存入当前输入的电影ID
-      Category.findById(categoryId, function (err, category) {
-        category.movies.push(movie._id)
+      if (categoryId) {
+        // 根据分类id存入当前输入的电影ID
+        Category.findById(categoryId, function (err, category) {
+          category.movies.push(movie._id)
+
+          category.save(function (err, category) {
+            res.redirect('/movie/' + movie._id);
+
+          })
+        })
+
+      } else if (categoryName) {
+        // 新增分类
+        var category = new Category({
+          name: categoryName,
+          movies: [movie._id]
+        })
 
         category.save(function (err, category) {
-          res.redirect('/movie/' + movie._id);
+          movie.category = category._id
+          movie.save(function (err, movie) {
+            res.redirect('/movie/' + movie._id);
+
+          })
 
         })
-      })
+      }
     })
   }
 }
