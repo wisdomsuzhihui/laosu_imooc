@@ -1,12 +1,12 @@
-var _ = require('underscore') // 新字段替换老字段
-var Index = require('../app/controllers/index')
-var User = require('../app/controllers/user')
-var Movie = require('../app/controllers/movie')
-var Comment = require('../app/controllers/comment')
-var Category = require('../app/controllers/category')
+var Index = require('../app/controllers/index'),
+  User = require('../app/controllers/user/user'),
+  Movie = require('../app/controllers/movie'),
+  Comment = require('../app/controllers/comment'),
+  Category = require('../app/controllers/category'),
 
-var multipart = require('connect-multiparty')
-var multipartMiddleware = multipart()
+  // 处理文件上传中间件
+  multipart = require('connect-multiparty'),
+  multipartMiddleware = multipart()
 /*
   var sql = require('mssql')
   var config = {
@@ -25,10 +25,14 @@ module.exports = function (app) {
 
   // pre handle user 预处理用户状态
   app.use(function (req, res, next) {
-    var _user = req.session.user
-    app.locals.user = _user
+    // 将session中保存的用户名存储到本地变量中
+    app.locals.user = req.session.user
     return next()
   })
+
+
+  /*============== 公共路由 ==============*/
+
 
   // Index
   app.get('/', Index.index)
@@ -37,7 +41,7 @@ module.exports = function (app) {
   app.post('/user/signup', User.signup)
   app.post('/user/signin', User.signin)
   app.get('/signin', User.showSignin)
-  app.get('/signup', User.showSignup)
+  app.get('/user/signup', User.showSignup)
   app.get('/logout', User.logout)
   app.get('/admin/user/list', User.signinRequired, User.adminRequired, User.userlist)
 

@@ -1,6 +1,6 @@
-  var User = require('../models/user')
+  var User = require('../../models/user/user')
 
-  // signup
+  /* 用户注册页面渲染控制器 */
   exports.showSignup = function (req, res) {
     res.render('signup', {
       title: '注册页面',
@@ -55,21 +55,31 @@
 
   // signin
   exports.signin = function (req, res) {
-    var _user = req.body.user
-    var name = _user.name
-    var password = _user.password
+    var user = req.query.user || '',
+      _user = {}
+    console.log('laosu===============' + user)
+    user = user.split('&')
+    for (var i = 0; i < user.length; i++) {
+      var p = user[i].indexOf('='),
+        name = user[i].substring(0, p),
+        value = user[i].substring(p + 1)
+      _user[name] = value;
+    }
+
+    var _name = _user.name || '',
+      _password = _user.password || ''
 
     User.findOne({
-      name: name
+      name: _name
     }, function (err, user) {
       if (err) {
         console.log(err)
       }
       if (!user) {
-        return res.redirect('/signup')
+        return res.redirect('/user/signup')
       }
       // 实例方法
-      user.comparePassword(password, function (err, isMatch) {
+      user.comparePassword(_password, function (err, isMatch) {
         if (err) {
           console.log(err);
         }

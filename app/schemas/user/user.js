@@ -1,9 +1,9 @@
 /**
  * 模式 Schema
  */
-var mongoose = require('mongoose')
-var bcrypt = require('bcrypt-nodejs')
-var SALT_WORK_FACTOR = 10 // 加盐强度
+var mongoose = require('mongoose'),
+  bcrypt = require('bcrypt-nodejs'),
+  SALT_WORK_FACTOR = 10 // 加盐强度
 
 var UserSchema = new mongoose.Schema({
   name: {
