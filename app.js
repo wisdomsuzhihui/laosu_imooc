@@ -6,7 +6,7 @@ var mongoStore = require('connect-mongo')(express)
 var _ = require('underscore') // 新字段替换老字段
 // http://docs.sequelizejs.com/en/v3/
 var Sequelize = require('sequelize');
-
+var fs = require('fs')
 var Movie = require('./app/models/movie')
 var User = require('./app/models/user')
 var port = process.env.PORT || 3000
@@ -14,6 +14,26 @@ var app = express()
 var dbUrl = 'mongodb://localhost/imooc'
 // var db = require('./db1');
 mongoose.connect(dbUrl)
+
+// models loading
+var models_path = __dirname + '/app/models'
+var walk = function (path) {
+  fs
+    .readdirSync(path)
+    .forEach(function (file) {
+      var newPath = path + '/' + file
+      var stat = fs.statSync(newPath)
+
+      if (stat.isFile()) {
+        if (/(.*)\.(js|coffe)/.test(file)) {
+          require(newPath)
+        }
+      } else if (stat.isDirectory()) {
+        walk(newPath)
+      }
+    })
+}
+walk(models_path)
 
 var sequelize = new Sequelize('ItcastSIM', 'sa', '123456', {
   host: '127.0.0.1',
@@ -48,6 +68,7 @@ app.set('views', './app/views/pages')
 app.set('view engine', 'jade')
 app.use(express.bodyParser())
 app.use(express.cookieParser())
+app.use(express.multipart())
 app.use(express.session({
   secret: 'laosu',
   store: new mongoStore({
