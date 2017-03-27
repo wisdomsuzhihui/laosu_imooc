@@ -2,8 +2,13 @@ var express = require('express')
 var path = require('path')
 var sql = require('mssql')
 var mongoose = require('mongoose')
-var mongoStore = require('connect-mongo')(express)
-var _ = require('underscore') // 新字段替换老字段
+
+var bodyParser = require('body-parser')
+var cookieParser = require('cookie-parser')
+var session = require('express-session')
+var mongoStore = require('connect-mongo')(session)
+var logger = require('morgan')
+var serveStatic = require('serve-static')
 // http://docs.sequelizejs.com/en/v3/
 var Sequelize = require('sequelize');
 var fs = require('fs')
@@ -34,6 +39,7 @@ var walk = function (path) {
     })
 }
 walk(models_path)
+
 
 var sequelize = new Sequelize('ItcastSIM', 'sa', '123456', {
   host: '127.0.0.1',
@@ -66,11 +72,21 @@ var sequelize = new Sequelize('ItcastSIM', 'sa', '123456', {
 
 app.set('views', './app/views/pages')
 app.set('view engine', 'jade')
-app.use(express.bodyParser())
-app.use(express.cookieParser())
-app.use(express.multipart())
-app.use(express.session({
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({
+  extended: false
+}))
+
+// parse application/json
+app.use(bodyParser.json())
+
+
+app.use(cookieParser())
+// app.use(multipart())
+app.use(session({
   secret: 'laosu',
+  resave: false,
+  saveUninitialized: true,
   store: new mongoStore({
     url: dbUrl,
     collection: 'sessions'
@@ -78,9 +94,10 @@ app.use(express.session({
 }))
 
 // development: 开发环境
-if ('development' === app.set('env')) {
+var env = process.env.NODE_ENV || 'development'
+if ('development' === env) {
   app.set('showStackError', true)
-  app.use(express.logger(':method :url :status'))
+  app.use(logger(':method :url :status'))
   app.locals.pretty = true
   mongoose.set('debug', true)
 }
@@ -88,7 +105,7 @@ if ('development' === app.set('env')) {
 
 require('./config/routes')(app)
 
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(serveStatic(path.join(__dirname, 'public')))
 app.locals.moment = require('moment')
 app.listen(port)
 
