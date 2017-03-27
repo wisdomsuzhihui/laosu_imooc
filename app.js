@@ -110,3 +110,4 @@ app.locals.moment = require('moment')
 app.listen(port)
 
 console.log('laosu website started on port ' + port)
+// https://github.com/Loogeek/douban_Website.git
