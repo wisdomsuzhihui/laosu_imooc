@@ -21,7 +21,8 @@ var dbUrl = 'mongodb://localhost/imooc'
 mongoose.connect(dbUrl)
 
 // models loading
-var models_path = __dirname + '/app/models'
+var models_path = __dirname + '/app/models' // 模型所在路径
+// 路径加载函数，加载各模型的路径,所以可以直接通过mongoose.model加载各模型 这样即使模型路径改变也无需更改路径
 var walk = function (path) {
   fs
     .readdirSync(path)
@@ -38,7 +39,7 @@ var walk = function (path) {
       }
     })
 }
-walk(models_path)
+walk(models_path) // 加载模型所在路径
 
 
 var sequelize = new Sequelize('ItcastSIM', 'sa', '123456', {
@@ -84,12 +85,13 @@ app.use(bodyParser.json())
 app.use(cookieParser())
 // app.use(multipart())
 app.use(session({
-  secret: 'laosu',
-  resave: false,
+  secret: 'laosu', // 设置的secret字符串，来计算hash值并放在cookie中
+  resave: false, // session变化才进行存储
   saveUninitialized: true,
+  // 使用mongo对session进行持久化，将session存储进数据库中
   store: new mongoStore({
     url: dbUrl,
-    collection: 'sessions'
+    collection: 'sessions' // 存储到mongodb中的字段名
   })
 }))
 
@@ -98,7 +100,7 @@ var env = process.env.NODE_ENV || 'development'
 if ('development' === env) {
   app.set('showStackError', true)
   app.use(logger(':method :url :status'))
-  app.locals.pretty = true
+  app.locals.pretty = true // 源码格式化，不要压缩
   mongoose.set('debug', true)
 }
 

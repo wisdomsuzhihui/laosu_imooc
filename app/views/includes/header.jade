@@ -33,10 +33,10 @@
           .modal-body
             .form-group
               label(for="signupName") 用户名
-              input#signupName.form-control(name="user[name]", type="text")
+              input#signupName.form-control(name="name", type="text")
             .form-group
               label(for="signupPassword") 密码
-              input#signupPassword.form-control(name="user[password]", type="text")
+              input#signupPassword.form-control(name="password", type="text")
           .modal-footer
             button.btn.btn-default(data-dismiss="modal", type="button") 关闭
             button.btn.btn-success(type="submit") 提交
@@ -44,15 +44,15 @@
 #signinModel.modal.fade
   .modal-dialog
     .modal-content
-      form(action="/user/signin" method="POST")
+      form(action="/user/signin" method="GET")
         .modal-header 登录
           .modal-body
             .form-group
               label(for="signinName") 用户名
-              input#signinName.form-control(name="user[name]", type="text")
+              input#signinName.form-control(name="name", type="text")
             .form-group
               label(for="signinPassword") 密码
-              input#signinPassword.form-control(name="user[password]", type="text")
+              input#signinPassword.form-control(name="password", type="password")
           .modal-footer
             button.btn.btn-default(data-dismiss="modal", type="button") 关闭
             button.btn.btn-success(type="submit") 提交
